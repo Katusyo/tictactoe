@@ -39,6 +39,8 @@ const TicTacToe = (() => {
             const movePlayed = Gameboard.setCell(index, currentPlayer.marker);
             if (!movePlayed) return;
 
+            DisplayController.render();
+
             if (checkWinner()) {
                 console.log(`${currentPlayer.name} wins!`);
                 gameOver = true;
@@ -54,7 +56,7 @@ const TicTacToe = (() => {
             switchPlayer();
         };
 
-        const checkWinner = () => () => {
+        const checkWinner = () => {
             const b = Gameboard.getBoard();
 
             const winningCombos = [
@@ -63,8 +65,8 @@ const TicTacToe = (() => {
                 [0,4,8], [2,4,6]
             ];
 
-            return wins.some(combo => 
-            combo.every(i => b[i] === currentPlayer.marker)
+            return winningCombos.some(combo => 
+                combo.every(i => b[i] === currentPlayer.marker)
             );
         };
 
@@ -74,9 +76,42 @@ const TicTacToe = (() => {
         return { playTurn };
     })();
 
+    const DisplayController = (() => {
+        const boardContainer = document.querySelector(".gameboard");
+
+        const render = () => {
+            const board = Gameboard.getBoard();
+            
+            boardContainer.innerHTML = "";
+
+            board.forEach((cell, index) => {
+                const cellDiv = document.createElement("div");
+                cellDiv.classList.add("cell");
+                cellDiv.dataset.index = index;
+                cellDiv.textContent = cell;
+
+                boardContainer.appendChild(cellDiv);
+            });
+        };
+
+        const init = () => {
+            boardContainer.addEventListener("click", (e) => {
+                const index = e.target.dataset.index;
+                if (index === undefined) return;
+
+                GameController.playTurn(Number(index));
+            });
+        };
+
+        return { render, init };
+    })();
+
+    DisplayController.render();
+    DisplayController.init();
+
+
     return {
         playTurn: GameController.playTurn,
-        getBoard: Gameboard.getBoard
     };
 
 })();

@@ -79,6 +79,11 @@ const TicTacToe = (() => {
     const DisplayController = (() => {
         const boardContainer = document.querySelector(".gameboard");
 
+        if (!boardContainer) {
+            console.error("Board container not found!");
+            return;
+        }
+
         const render = () => {
             const board = Gameboard.getBoard();
             
@@ -115,3 +120,4 @@ const TicTacToe = (() => {
     };
 
 })();
+window.TicTacToe = TicTacToe;

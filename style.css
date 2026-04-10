@@ -2,6 +2,54 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: rgb(135, 89, 179);
+}
+
+h1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: white;
+}
+
+.status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: black;
+}
+
+button .reset {
+    display : flex;
+    justify-content: center;
+    align-self: center;
+}
+
+.reset {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    padding: 8px 16px;
+    cursor: pointer;
+    background-color: rgb(199, 163, 233);
+    border-radius: 13px;
+
+    box-shadow: 2px 2px 8px black;
 }
 
 .gameboard {
@@ -19,4 +67,55 @@
     border: 2px solid black;
     font-size: 2rem;
     cursor: pointer;
+    background-color: rgb(81, 249, 255);
+}
+
+.status {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.reset {
+    display: block;
+    margin: 10px auto;
+    margin-top: 10px;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgb(135, 89, 179);
+}
+
+.modal-content {
+    background: rgb(81, 249, 255);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.modal input {
+    border: 3px solid black;
+    display: block;
+    margin: 10px auto;
+    padding: 8px;
+
+    box-shadow: 2px 2px 8px black;
+}
+
+.winning-cell {
+    background-color: pink;
+    color: black;
+    font-weight: bold;
+    transform: scale(1.05);
+    transition: 0.2s;
 }

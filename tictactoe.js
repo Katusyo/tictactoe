@@ -31,10 +31,14 @@ const TicTacToe = (() => {
         const statusDiv = document.querySelector(".status");
         const resetBtn = document.querySelector(".reset");
         const scoreDiv = document.querySelector(".scoreboard");
+        const newGameBtn = document.querySelector(".new-game");
+        const nextRoundBtn = document.querySelector(".next-round");
+        const matchSelect = document.querySelector("#matchLength");
 
         const updateStatus = () => {
             const status = GameController.getStatus();
             const player = GameController.getCurrentPlayer();
+            const matchWinner = GameController.getMatchWinner();
 
             if (!player) {
                 statusDiv.textContent = "Enter player names to start!";
@@ -50,6 +54,11 @@ const TicTacToe = (() => {
                 statusDiv.textContent = 
                 `Current Player: ${player.name}`;
             }
+
+            if (matchWinner) {
+                statusDiv.textContent = `${matchWinner.name} wins the match!`;
+                return;
+            }
         };
 
         if (!boardContainer || !statusDiv || !resetBtn) {
@@ -60,12 +69,27 @@ const TicTacToe = (() => {
         const render = () => {
             const board = Gameboard.getBoard();
             const winningCells = GameController.getWinningCells();
+            const status = GameController.getStatus();
+            const matchWinner = GameController.getMatchWinner();
+                if (status === "playing" && !matchWinner) {
+                    resetBtn.disabled = true;
+                } else {
+                    resetBtn.disabled = false
+                }
             
             boardContainer.innerHTML = "";
+
+                if (matchWinner) {
+                    cellDiv.classList.add("disabled");
+                    nextRoundBtn.style.display = "none";
+                } else {
+                    nextRoundBtn.style.display = "block";
+                }
 
             board.forEach((cell, index) => {
                 const cellDiv = document.createElement("div");
                 cellDiv.classList.add("cell");
+
                 cellDiv.dataset.index = index;
                 cellDiv.textContent = cell;
 
@@ -99,6 +123,9 @@ const TicTacToe = (() => {
             startBtn.addEventListener("click", () => {
                 const name1 = player1Input.value;
                 const name2 = player2Input.value;
+                const length = Number(matchSelect.value);
+
+                GameController.setMatchLength(length);
 
                 GameController.setPlayers(name1, name2);
 
@@ -121,6 +148,19 @@ const TicTacToe = (() => {
 
             resetBtn.addEventListener("click", () => {
                 GameController.resetGame();
+                render();
+            });
+
+            newGameBtn.addEventListener("click", () => {
+                GameController.resetGame();
+                GameController.clearPlayers();
+
+                modal.style.display = "flex";
+                render();
+            });
+
+            nextRoundBtn.addEventListener("click", () => {
+                GameController.nextRound();
                 render();
             });
         };
@@ -147,9 +187,16 @@ const TicTacToe = (() => {
         let gameOver = false;
         let status = "playing";
         let winningCells = [];
+        let matchLength = 5;
+        let winsNeeded = 3;
+        let matchWinner = null;
 
         const getCurrentPlayer = () => currentPlayer;
         const getStatus = () => status;
+        const setMatchLength = (length) => {
+            matchLength = length;
+            winsNeeded = Math.ceil(length / 2);
+        };
 
         const resetGame = () => {
             Gameboard.resetBoard();
@@ -158,6 +205,31 @@ const TicTacToe = (() => {
             status = "playing";
             winningCells = [];
             scores = { player1: 0, player2: 0 };
+            matchWinner = null;
+        };
+
+        const clearPlayers = () => {
+            player1 = null;
+            player2 = null;
+            currentPlayer = null;
+        };
+
+        const nextRound = () => {
+            Gameboard.resetBoard();
+            currentPlayer = player1;
+            gameOver = false;
+            status = "playing";
+            winningCells = [];
+        }
+
+        const resetMatch = () => {
+            Gameboard.resetBoard();
+            scores = { player1: 0, player2:0 };
+            currentPlayer = player1;
+            gameOver = false;
+            status = "playing";
+            winningCells = [];
+            matchWinner = null;
         }
 
         const switchPlayer = () => {
@@ -166,7 +238,7 @@ const TicTacToe = (() => {
 
         const playTurn = (index) => {
             if (!player1 || !player2) return;
-            if (gameOver) return;
+            if (gameOver || matchWinner) return;
 
             const movePlayed = Gameboard.setCell(index, currentPlayer.marker);
             if (!movePlayed) return;
@@ -178,8 +250,16 @@ const TicTacToe = (() => {
 
                 if (currentPlayer === player1) {
                     scores.player1++;
+                    if (scores.player1 === winsNeeded) {
+                        matchWinner = player1;
+                        status = "Match Winner: " + player1.name;
+                    }
                 } else {
                     scores.player2++;
+                    if (scores.player2 === winsNeeded) {
+                        matchWinner = player2;
+                        status = "Match Winner: " + player2.name;
+                    }
                 }
                 return;
             }
@@ -223,8 +303,12 @@ const TicTacToe = (() => {
 
         const getPlayers = () => ({ player1, player2 });
 
+        const getMatchWinner = () => matchWinner;
+        const getMatchLength = () => matchLength;
+
         return { playTurn, getCurrentPlayer, getStatus, resetGame, setPlayers, 
-            getWinningCells, getScores, getPlayers };
+            getWinningCells, getScores, getPlayers, getMatchWinner, getMatchLength,
+            setMatchLength, nextRound, clearPlayers, resetMatch };
     })();
 
 
